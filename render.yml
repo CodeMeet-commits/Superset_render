@@ -1,0 +1,18 @@
+services:
+  - type: web
+    name: superset
+    env: python
+    buildCommand: |
+      pip install -r requirements.txt
+      superset db upgrade
+      superset fab create-admin \
+        --username admin \
+        --firstname Admin \
+        --lastname User \
+        --email admin@example.com \
+        --password Admin123@
+      superset init
+    startCommand: |
+      gunicorn -w 2 -k gevent --timeout 120 \
+      -b 0.0.0.0:$PORT \
+      "superset.app:create_app()"
